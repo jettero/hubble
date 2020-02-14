@@ -137,9 +137,11 @@ RUN mkdir -p "$LIBGIT2TEMP" \
 # use pyenv
 ARG PYENV_VERSION=3.6.10
 ENV PYENV_INSTALLER_URL=https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer
-ENV PYENV_ROOT=/usr/local/pyenv
+ENV PYENV_ROOT=/opt/pyenv
+ENV LD_RUN_PATH=$PYENV_ROOT/versions/$PYENV_VERSION/lib
 ENV PATH=$PYENV_ROOT/bin:$PATH
 RUN umask 022 \
+ && yum install -y bzip2-devel \
  && curl -s -S -L "$PYENV_INSTALLER_URL" -o /usr/bin/pyenv-installer \
  && chmod 0755 /usr/bin/pyenv-installer \
  && /usr/bin/pyenv-installer \
@@ -171,7 +173,7 @@ ENV _HOOK_DIR="./pkg/"
 ENV _BINARY_LOG_LEVEL="INFO"
 ENV _INCLUDE_PATH=""
 ENV LD_LIBRARY_PATH=/opt/hubble/lib:/lib:/lib64:/usr/lib:/usr/lib64:/usr/local/lib:/usr/local/lib64
-RUN git clone "$HUBBLE_GIT_URL" "$HUBBLE_SRC_PATH" \
+RUN set -x; git clone "$HUBBLE_GIT_URL" "$HUBBLE_SRC_PATH" \
  && cd "$HUBBLE_SRC_PATH" \
  && git checkout -B hubble-build && git reset --hard "$HUBBLE_CHECKOUT" && git clean -dfx \
  && cp -rf "$HUBBLE_SRC_PATH" /hubble_build \
@@ -189,11 +191,19 @@ CMD [ "if [ -f /data/hubble_buildinfo ] ; then echo \"\" >> /hubble_build/hubble
     && cp -rf /hubble_build/conf/hubble /etc/hubble/ \
     && cp -rf /hubble_build/conf/hubble-profile.sh /etc/profile.d/ \
     && cp -pr /hubble_build/dist/hubble /opt/hubble/hubble-libs \
-    && ln -s /opt/hubble/hubble-libs/hubble /opt/hubble/hubble \
+    && echo '#!/bin/bash' > /opt/hubble/hubble \
+    && echo >> /opt/hubble/hubble \
+    && echo 'exec /opt/hubble/hubble-libs/hubble \"$@\"' >> /opt/hubble/hubble \
+    && chmod 0755 /opt/hubble/hubble \
     # make sure rpm shared libs are taken out to avoid mismatch between rpm database and shared libs that pyinstaller includes
     && rm -rf /opt/hubble/hubble-libs/librpm* \
+    && cp -va /opt/pyenv/versions/*/lib/libpython* /opt/hubble/hubble-libs/ \
+    && rsync -av /opt/pyenv/versions/*/lib/python3.6/ /opt/hubble/hubble-libs/ \
 #rpm pkg start
-    && tar -cPvzf /data/hubblestack-${HUBBLE_VERSION}.tar.gz /etc/hubble /opt/hubble /opt/osquery /etc/profile.d/hubble-profile.sh /var/log/hubble_osquery/backuplogs \
+    && tar -cPvzf /data/hubblestack-${HUBBLE_VERSION}.tar.gz \
+        /etc/hubble /opt/hubble \
+        /opt/osquery /etc/profile.d/hubble-profile.sh \
+        /var/log/hubble_osquery/backuplogs \
     && mkdir -p /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION} \
     && tar -xzvf /data/hubblestack-${HUBBLE_VERSION}.tar.gz -C /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION} \
     && mkdir -p /hubble_build/debbuild/hubblestack-${HUBBLE_VERSION}/usr/lib/systemd/system \

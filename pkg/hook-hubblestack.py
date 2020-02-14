@@ -1,6 +1,12 @@
+
+from PyInstaller.utils.hooks import collect_submodules
+
 HIDDEN_IMPORTS = [
+    # random missing things after py3 upgrade
+    'encodings',
+
     'ssl',
-    'crypto',
+    'Crypto',
     'OpenSSL',
     'argparse',
     'base64',
@@ -39,11 +45,18 @@ HIDDEN_IMPORTS = [
     # late for the packer to notice it should be packed in the binary.
     # marking it here for "hidden import"
     'hubblestack.utils.encoding',
+
+    # signign uses pycryptodome and pyopenssl and various other things
+    # make sure pyinstaller see this
+    'hubblestack.utils.signing',
 ]
 DATAS = []
 binaries = []
 
+def _yield_all(HI):
+    for i in HI:
+        yield from collect_submodules(i)
 
-hiddenimports = HIDDEN_IMPORTS
+hiddenimports = list(_yield_all(HIDDEN_IMPORTS))
 # datas = DATAS
 # binaries = BINARIES

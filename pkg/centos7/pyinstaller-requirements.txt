@@ -1,5 +1,7 @@
 pyinstaller==3.3.1
-Crypto
+pyinstaller-hooks
+cryptography
+pycryptodome
 pyopenssl>=16.2.0
 argparse
 requests>=2.13.0
@@ -8,7 +10,7 @@ daemon
 boto3
 botocore
 pygit2<0.27.0
-salt-ssh
+salt-ssh==2019.2.2
 gitpython
 pyinotify
 cffi

@@ -13,8 +13,9 @@
 import os
 from PyInstaller.utils.hooks import (collect_data_files,
                                      collect_submodules,
-                                     collect_dynamic_libs,
-                                     PY_EXECUTABLE_SUFFIXES)
+                                     collect_dynamic_libs)
+
+PY_EXECUTABLE_SUFFIXES = set(['.py', '.pyc', '.pyd', '.pyo', '.so'])
 
 DATAS = []
 BINARIES = []
