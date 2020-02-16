@@ -50,9 +50,9 @@ from collections import OrderedDict, namedtuple
 # In any case, pycrypto won't do the job. The below requires pycryptodome.
 # (M2Crypto is the other choice; but the docs are weaker, mostly non-existent.)
 
-from Crypto.IO import PEM
-from Crypto.Util import asn1
-from Crypto.Hash import SHA256
+from Cryptodome.IO import PEM
+from Cryptodome.Util import asn1
+from Cryptodome.Hash import SHA256
 
 import OpenSSL.crypto as ossl
 

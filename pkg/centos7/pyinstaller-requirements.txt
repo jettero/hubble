@@ -1,7 +1,7 @@
 pyinstaller==3.3.1
 pyinstaller-hooks
 cryptography
-pycryptodome
+pycryptodomex
 pyopenssl>=16.2.0
 argparse
 requests>=2.13.0
