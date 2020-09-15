@@ -100,8 +100,12 @@ class TestPulsar(object):
             ''' pretend match.compound '''
             return value
 
+<<<<<<< HEAD
         __mods__ = { 'cp.cache_file': cp_cache_file, 'match.compound': match_compound}
         pulsar.__salt__ = __mods__
+=======
+        __mods__ = {'cp.cache_file': cp_cache_file, 'match.compound': match_compound}
+>>>>>>> c1140d0... add cp module dependencies
         pulsar.__mods__ = __mods__
         get_top_data_config = pulsar.get_top_data(topfile)
         configs = ['salt://hubblestack_pulsar/' + config.replace('.', '/') + '.yaml'
@@ -119,8 +123,7 @@ class TestPulsar(object):
             ''' pretend match.compound '''
             return value
 
-        __mods__ = { 'cp.cache_file': cp_cache_file, 'match.compound': match_compound}
-        pulsar.__salt__ = __mods__
+        __mods__ = {'cp.cache_file': cp_cache_file, 'match.compound': match_compound}
         pulsar.__mods__ = __mods__
         result = pulsar.get_top_data(topfile)
         pulsar.__salt__ = {}
@@ -139,7 +142,6 @@ class TestPulsar(object):
             return value
 
         __mods__ = { 'cp.cache_file': cp_cache_file, 'match.compound': match_compound}
-        pulsar.__salt__ = __mods__
         pulsar.__mods__ = __mods__
         try:
             _result = pulsar.get_top_data(topfile)
